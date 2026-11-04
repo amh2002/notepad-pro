@@ -1,0 +1,61 @@
+<dialogs:DialogWindow x:Class="NotepadPro.Dialogs.AboutWindow"
+                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:dialogs="clr-namespace:NotepadPro.Dialogs"
+                     xmlns:controls="clr-namespace:NotepadPro.Controls"
+                     Title="About Notepad Pro"
+                     Width="540" SizeToContent="Height">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="36" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <controls:DialogTitleBar Grid.Row="0" />
+
+        <StackPanel Grid.Row="1" Margin="28,24,28,22">
+            <StackPanel Orientation="Horizontal">
+                <Border Width="64" Height="64" CornerRadius="14"
+                        Background="{DynamicResource App.SurfaceAltBrush}"
+                        BorderBrush="{DynamicResource App.BorderBrush}" BorderThickness="1">
+                    <Image Source="/Assets/NotepadPro.png" Width="48" Height="48"
+                           RenderOptions.BitmapScalingMode="HighQuality" />
+                </Border>
+                <StackPanel Margin="18,2,0,0" VerticalAlignment="Center">
+                    <TextBlock Text="Notepad Pro" Style="{StaticResource DialogTitleText}" />
+                    <TextBlock x:Name="VersionText" Style="{StaticResource HintText}" Margin="0,3,0,0" />
+                </StackPanel>
+            </StackPanel>
+
+            <TextBlock Margin="0,18,0,0" TextWrapping="Wrap" Foreground="{DynamicResource App.TextSecondaryBrush}"
+                       Text="A fast, native text and code editor inspired by the simplicity of Windows Notepad, with tabs, syntax highlighting, find and replace, themes, and crash-safe recovery." />
+
+            <Border Style="{StaticResource DialogCard}" Margin="0,18,0,0" Padding="14">
+                <StackPanel>
+                    <Grid Margin="0,0,0,7">
+                        <TextBlock Text="Editor engine" Foreground="{DynamicResource App.TextSecondaryBrush}" />
+                        <TextBlock x:Name="EngineText" HorizontalAlignment="Right" FontWeight="SemiBold" />
+                    </Grid>
+                    <Grid Margin="0,0,0,7">
+                        <TextBlock Text="Runtime" Foreground="{DynamicResource App.TextSecondaryBrush}" />
+                        <TextBlock x:Name="RuntimeText" HorizontalAlignment="Right" />
+                    </Grid>
+                    <Grid>
+                        <TextBlock Text="Configuration" Foreground="{DynamicResource App.TextSecondaryBrush}" />
+                        <TextBlock x:Name="ConfigText" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis"
+                                   MaxWidth="310" ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Margin="0,16,0,0" Style="{StaticResource HintText}"
+                       Text="Copyright © 2026 Notepad Pro contributors. Built with .NET and AvalonEdit." />
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+                <Button Content="Copy diagnostics" Click="CopyDiagnostics_Click" Margin="0,0,8,0" />
+                <Button Content="Close" Style="{StaticResource PrimaryButton}" IsDefault="True" IsCancel="True"
+                        Click="Close_Click" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</dialogs:DialogWindow>

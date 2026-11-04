@@ -1,0 +1,63 @@
+name: Bug report
+description: Report a crash, data-safety issue, or incorrect behavior
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please search existing issues first.
+        For data-loss or security problems, mention that in the title.
+
+  - type: input
+    id: version
+    attributes:
+      label: Notepad Pro version
+      description: Shown under Help → About.
+      placeholder: 1.0.0
+    validations:
+      required: true
+
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version
+      placeholder: Windows 11 24H2 (x64)
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: List the exact steps, including the file type or language involved.
+      placeholder: |
+        1. Open a .ts file
+        2. Press Ctrl+H
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened instead? Include screenshots or a sample file if useful.
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error log
+      description: If `%LOCALAPPDATA%\NotepadPro\error.log` exists, paste its contents.
+      render: text
+    validations:
+      required: false

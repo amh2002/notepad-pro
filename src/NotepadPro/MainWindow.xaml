@@ -1,0 +1,470 @@
+﻿<Window x:Class="NotepadPro.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        Title="Notepad Pro"
+        Width="1220" Height="800" MinWidth="660" MinHeight="440"
+        WindowStyle="None" ResizeMode="CanResize"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource App.WindowBrush}"
+        Foreground="{DynamicResource App.TextPrimaryBrush}"
+        FontFamily="{StaticResource App.FontFamily}" FontSize="13"
+        Icon="/Assets/NotepadPro.ico"
+        SnapsToDevicePixels="True" UseLayoutRounding="True"
+        AllowDrop="True"
+        Loaded="Window_Loaded"
+        Closing="Window_Closing"
+        Closed="Window_Closed"
+        StateChanged="Window_StateChanged"
+        Activated="Window_Activated"
+        PreviewKeyDown="Window_PreviewKeyDown"
+        DragOver="Window_DragOver"
+        Drop="Window_Drop">
+
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome CaptionHeight="40" ResizeBorderThickness="6"
+                            GlassFrameThickness="0" CornerRadius="0"
+                            UseAeroCaptionButtons="False" />
+    </shell:WindowChrome.WindowChrome>
+
+    <Window.Resources>
+        <ContextMenu x:Key="TabContextMenu" DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+            <MenuItem Header="_Save" Click="TabContextSave_Click" />
+            <MenuItem Header="Save _as..." Click="TabContextSaveAs_Click" />
+            <Separator />
+            <MenuItem Header="_Close" Click="TabContextClose_Click" />
+            <MenuItem Header="Close _other tabs" Click="TabContextCloseOthers_Click" />
+            <MenuItem Header="Close _all tabs" Click="TabContextCloseAll_Click" />
+            <Separator />
+            <MenuItem Header="Copy full _path" Click="TabContextCopyPath_Click" />
+            <MenuItem Header="Open containing f_older" Click="TabContextOpenFolder_Click" />
+            <Separator />
+            <MenuItem Header="_Reload from disk" Click="TabContextReload_Click" />
+        </ContextMenu>
+
+        <Style x:Key="TabItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0,4,2,0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="ToolTip" Value="{Binding TabToolTip}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="TabBorder" Height="32" MinWidth="104" MaxWidth="224"
+                                Background="{DynamicResource App.TabInactiveBrush}"
+                                BorderBrush="Transparent" BorderThickness="1,1,1,0"
+                                CornerRadius="7,7,0,0" Padding="11,0,7,0">
+                            <ContentPresenter VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource App.TabHoverBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource App.TabActiveBrush}" />
+                                <Setter TargetName="TabBorder" Property="BorderBrush" Value="{DynamicResource App.BorderBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ContextMenu" Value="{StaticResource TabContextMenu}" />
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- ============================= Title bar ============================= -->
+        <Border Grid.Row="0" Background="{DynamicResource App.TitleBarBrush}">
+            <Grid Margin="12,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Image Source="/Assets/NotepadPro.png" Width="18" Height="18"
+                           RenderOptions.BitmapScalingMode="HighQuality" />
+                    <TextBlock Text="Notepad Pro" FontSize="12" FontWeight="SemiBold" Margin="8,0,0,0"
+                               VerticalAlignment="Center" Foreground="{DynamicResource App.TextPrimaryBrush}" />
+                    <Border Width="1" Height="14" Background="{DynamicResource App.BorderBrush}" Margin="12,0" />
+                    <TextBlock Text="{Binding ActiveDocument.DisplayTitle}" FontSize="12"
+                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="460"
+                               Foreground="{DynamicResource App.TextSecondaryBrush}" />
+                    <Ellipse Width="6" Height="6" Margin="8,0,0,0" VerticalAlignment="Center"
+                             Fill="{DynamicResource App.WarningBrush}"
+                             Visibility="{Binding ActiveDocument.DirtyMarkerVisibility}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal"
+                            shell:WindowChrome.IsHitTestVisibleInChrome="True">
+                    <Button Style="{StaticResource WindowButton}" Click="Minimize_Click" ToolTip="Minimize">
+                        <TextBlock Text="&#xE921;" FontFamily="{StaticResource App.IconFontFamily}" FontSize="10" />
+                    </Button>
+                    <Button Style="{StaticResource WindowButton}" Click="MaximizeRestore_Click" ToolTip="Maximize">
+                        <TextBlock x:Name="MaximizeGlyph" Text="&#xE922;" FontFamily="{StaticResource App.IconFontFamily}" FontSize="10" />
+                    </Button>
+                    <Button Style="{StaticResource CloseWindowButton}" Click="CloseWindow_Click" ToolTip="Close">
+                        <TextBlock Text="&#xE8BB;" FontFamily="{StaticResource App.IconFontFamily}" FontSize="10" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ============================= Menu bar ============================= -->
+        <Border Grid.Row="1" Background="{DynamicResource App.MenuBackgroundBrush}"
+                BorderBrush="{DynamicResource App.BorderBrush}" BorderThickness="0,0,0,1">
+            <Menu x:Name="MainMenu" IsMainMenu="True" Padding="6,0" Height="34" Background="Transparent">
+                <MenuItem x:Name="FileMenu" Header="_File" SubmenuOpened="TopMenu_SubmenuOpened">
+                    <MenuItem Header="_New tab" InputGestureText="Ctrl+N" Click="NewTab_Click" />
+                    <MenuItem Header="_Open..." InputGestureText="Ctrl+O" Click="OpenFile_Click" />
+                    <MenuItem x:Name="RecentMenu" Header="Open _recent" />
+                    <Separator />
+                    <MenuItem x:Name="SaveMenuItem" Header="_Save" InputGestureText="Ctrl+S" Click="Save_Click" />
+                    <MenuItem Header="Save _as..." InputGestureText="Ctrl+Shift+S" Click="SaveAs_Click" />
+                    <MenuItem Header="Save a_ll" InputGestureText="Ctrl+Alt+S" Click="SaveAll_Click" />
+                    <Separator />
+                    <MenuItem Header="_Close tab" InputGestureText="Ctrl+W" Click="CloseTab_Click" />
+                    <MenuItem Header="Close _window" InputGestureText="Ctrl+Shift+W" Click="CloseWindow_Click" />
+                    <MenuItem Header="Re_open closed tab" InputGestureText="Ctrl+Shift+T" Click="ReopenClosedTab_Click" />
+                    <Separator />
+                    <MenuItem Header="_Reload from disk" Click="ReloadFromDisk_Click" />
+                    <MenuItem Header="Open containing f_older" Click="OpenContainingFolder_Click" />
+                    <MenuItem Header="Copy full _path" Click="CopyFullPath_Click" />
+                    <Separator />
+                    <MenuItem Header="E_xit" InputGestureText="Alt+F4" Click="Exit_Click" />
+                </MenuItem>
+
+                <MenuItem Header="_Edit" SubmenuOpened="TopMenu_SubmenuOpened">
+                    <MenuItem x:Name="UndoMenuItem" Header="_Undo" InputGestureText="Ctrl+Z" Click="Undo_Click" />
+                    <MenuItem x:Name="RedoMenuItem" Header="_Redo" InputGestureText="Ctrl+Y" Click="Redo_Click" />
+                    <Separator />
+                    <MenuItem Header="Cu_t" InputGestureText="Ctrl+X" Click="Cut_Click" />
+                    <MenuItem Header="_Copy" InputGestureText="Ctrl+C" Click="Copy_Click" />
+                    <MenuItem Header="_Paste" InputGestureText="Ctrl+V" Click="Paste_Click" />
+                    <MenuItem Header="_Delete" InputGestureText="Del" Click="DeleteSelection_Click" />
+                    <Separator />
+                    <MenuItem Header="Select _all" InputGestureText="Ctrl+A" Click="SelectAll_Click" />
+                    <Separator />
+                    <MenuItem Header="_Duplicate line" InputGestureText="Ctrl+D" Click="DuplicateLine_Click" />
+                    <MenuItem Header="De_lete line" InputGestureText="Ctrl+Shift+K" Click="DeleteLine_Click" />
+                    <MenuItem Header="Move line _up" InputGestureText="Alt+Up" Click="MoveLineUp_Click" />
+                    <MenuItem Header="Move line _down" InputGestureText="Alt+Down" Click="MoveLineDown_Click" />
+                    <Separator />
+                    <MenuItem Header="_Toggle comment" InputGestureText="Ctrl+/" Click="ToggleComment_Click" />
+                    <MenuItem Header="_Indent" InputGestureText="Tab" Click="Indent_Click" />
+                    <MenuItem Header="_Outdent" InputGestureText="Shift+Tab" Click="Outdent_Click" />
+                    <Separator />
+                    <MenuItem Header="Convert _case">
+                        <MenuItem Header="UPPERCASE" Click="UpperCase_Click" />
+                        <MenuItem Header="lowercase" Click="LowerCase_Click" />
+                        <MenuItem Header="Title Case" Click="TitleCase_Click" />
+                        <MenuItem Header="Sentence case" Click="SentenceCase_Click" />
+                    </MenuItem>
+                    <MenuItem Header="Trim trailing _whitespace" Click="TrimWhitespace_Click" />
+                    <MenuItem Header="Insert date and _time" InputGestureText="F5" Click="InsertDateTime_Click" />
+                </MenuItem>
+
+                <MenuItem Header="_View" SubmenuOpened="TopMenu_SubmenuOpened">
+                    <MenuItem Header="Zoom _in" InputGestureText="Ctrl+Plus" Click="ZoomIn_Click" />
+                    <MenuItem Header="Zoom _out" InputGestureText="Ctrl+Minus" Click="ZoomOut_Click" />
+                    <MenuItem Header="_Reset zoom" InputGestureText="Ctrl+0" Click="ResetZoom_Click" />
+                    <Separator />
+                    <MenuItem x:Name="WordWrapMenuItem" Header="_Word wrap" InputGestureText="Ctrl+`"
+                              IsCheckable="True" Click="ToggleWordWrap_Click" />
+                    <MenuItem x:Name="LineNumbersMenuItem" Header="Show line _numbers"
+                              IsCheckable="True" Click="ToggleLineNumbers_Click" />
+                    <MenuItem x:Name="CurrentLineMenuItem" Header="Highlight current _line"
+                              IsCheckable="True" Click="ToggleCurrentLine_Click" />
+                    <MenuItem x:Name="IndentGuidesMenuItem" Header="Show indentation _guides"
+                              IsCheckable="True" Click="ToggleIndentGuides_Click" />
+                    <MenuItem x:Name="MatchBracketsMenuItem" Header="_Match brackets"
+                              IsCheckable="True" Click="ToggleMatchBrackets_Click" />
+                    <MenuItem x:Name="WhitespaceMenuItem" Header="Show _whitespace" InputGestureText="Ctrl+Shift+8"
+                              IsCheckable="True" Click="ToggleWhitespace_Click" />
+                    <MenuItem x:Name="EndOfLineMenuItem" Header="Show line _endings"
+                              IsCheckable="True" Click="ToggleEndOfLine_Click" />
+                    <MenuItem x:Name="FoldingMenuItem" Header="Enable _folding"
+                              IsCheckable="True" Click="ToggleFolding_Click" />
+                    <Separator />
+                    <MenuItem x:Name="StatusBarMenuItem" Header="Show status _bar" InputGestureText="Ctrl+Shift+B"
+                              IsCheckable="True" Click="ToggleStatusBar_Click" />
+                </MenuItem>
+
+                <MenuItem Header="_Search" SubmenuOpened="TopMenu_SubmenuOpened">
+                    <MenuItem Header="_Find..." InputGestureText="Ctrl+F" Click="Find_Click" />
+                    <MenuItem Header="_Replace..." InputGestureText="Ctrl+H" Click="Replace_Click" />
+                    <Separator />
+                    <MenuItem Header="Find _next" InputGestureText="F3" Click="FindNext_Click" />
+                    <MenuItem Header="Find _previous" InputGestureText="Shift+F3" Click="FindPrevious_Click" />
+                    <Separator />
+                    <MenuItem Header="_Go to line..." InputGestureText="Ctrl+G" Click="GoToLine_Click" />
+                </MenuItem>
+
+                <MenuItem Header="F_ormat" SubmenuOpened="TopMenu_SubmenuOpened">
+                    <MenuItem Header="_Word wrap" InputGestureText="Ctrl+`" Click="ToggleWordWrap_Click" />
+                    <MenuItem Header="_Toggle comment" InputGestureText="Ctrl+/" Click="ToggleComment_Click" />
+                    <MenuItem Header="_Indent selection" InputGestureText="Tab" Click="Indent_Click" />
+                    <MenuItem Header="_Outdent selection" InputGestureText="Shift+Tab" Click="Outdent_Click" />
+                    <Separator />
+                    <MenuItem Header="Convert _case">
+                        <MenuItem Header="UPPERCASE" Click="UpperCase_Click" />
+                        <MenuItem Header="lowercase" Click="LowerCase_Click" />
+                        <MenuItem Header="Title Case" Click="TitleCase_Click" />
+                        <MenuItem Header="Sentence case" Click="SentenceCase_Click" />
+                    </MenuItem>
+                    <MenuItem Header="Trim trailing _whitespace" Click="TrimWhitespace_Click" />
+                    <MenuItem Header="Insert date and _time" InputGestureText="F5" Click="InsertDateTime_Click" />
+                    <Separator />
+                    <MenuItem Header="_Duplicate line" InputGestureText="Ctrl+D" Click="DuplicateLine_Click" />
+                    <MenuItem Header="De_lete line" InputGestureText="Ctrl+Shift+K" Click="DeleteLine_Click" />
+                    <MenuItem Header="Move line _up" InputGestureText="Alt+Up" Click="MoveLineUp_Click" />
+                    <MenuItem Header="Move line _down" InputGestureText="Alt+Down" Click="MoveLineDown_Click" />
+                </MenuItem>
+
+                <MenuItem x:Name="LanguageMenu" Header="_Language" SubmenuOpened="TopMenu_SubmenuOpened" />
+
+                <MenuItem Header="_Settings" SubmenuOpened="TopMenu_SubmenuOpened">
+                    <MenuItem x:Name="ThemeMenu" Header="_Theme">
+                        <MenuItem x:Name="ThemeSystemMenuItem" Header="Use _Windows setting" IsCheckable="True" Click="ThemeSystem_Click" />
+                        <MenuItem x:Name="ThemeLightMenuItem" Header="_Light" IsCheckable="True" Click="ThemeLight_Click" />
+                        <MenuItem x:Name="ThemeDarkMenuItem" Header="_Dark" IsCheckable="True" Click="ThemeDark_Click" />
+                    </MenuItem>
+                    <MenuItem x:Name="SchemeMenu" Header="Color _scheme" />
+                    <Separator />
+                    <MenuItem Header="All _settings..." InputGestureText="Ctrl+," Click="OpenSettings_Click" />
+                    <MenuItem Header="Open configuration _folder" Click="OpenConfigFolder_Click" />
+                    <MenuItem Header="Open _recovery folder" Click="OpenRecoveryFolder_Click" />
+                </MenuItem>
+
+                <MenuItem Header="_Help" SubmenuOpened="TopMenu_SubmenuOpened">
+                    <MenuItem Header="_Keyboard shortcuts" InputGestureText="F1" Click="ShowShortcuts_Click" />
+                    <MenuItem Header="Open recovery _folder" Click="OpenRecoveryFolder_Click" />
+                    <Separator />
+                    <MenuItem Header="_About Notepad Pro" Click="ShowAbout_Click" />
+                </MenuItem>
+            </Menu>
+        </Border>
+
+        <!-- ============================= Tabs ============================= -->
+        <Border Grid.Row="2" Background="{DynamicResource App.TabInactiveBrush}"
+                BorderBrush="{DynamicResource App.BorderBrush}" BorderThickness="0,0,0,1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <ScrollViewer x:Name="TabScrollViewer" HorizontalScrollBarVisibility="Hidden"
+                              VerticalScrollBarVisibility="Disabled" CanContentScroll="False">
+                    <ListBox x:Name="TabStrip" ItemsSource="{Binding Documents}"
+                             SelectedItem="{Binding ActiveDocument, Mode=TwoWay}"
+                             ItemContainerStyle="{StaticResource TabItemStyle}"
+                             Background="Transparent" BorderThickness="0" Padding="6,0,0,0"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                             SelectionMode="Single"
+                             PreviewMouseWheel="TabStrip_PreviewMouseWheel"
+                             PreviewMouseDown="TabStrip_PreviewMouseDown">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Ellipse Width="7" Height="7" Margin="0,0,6,0" VerticalAlignment="Center"
+                                                 Fill="{DynamicResource App.WarningBrush}"
+                                                 Visibility="{Binding DirtyMarkerVisibility}" />
+                                        <TextBlock Text="{Binding Title}" MaxWidth="168" FontSize="12.5"
+                                                   TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <Button Grid.Column="1" Style="{StaticResource TabCloseButton}"
+                                            Margin="7,0,0,0" Click="TabClose_Click" ToolTip="Close tab">
+                                        <TextBlock Text="&#xE8BB;" FontFamily="{StaticResource App.IconFontFamily}" FontSize="8" />
+                                    </Button>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </ScrollViewer>
+
+                <Button Grid.Column="1" Style="{StaticResource IconButton}" Width="36" Height="32"
+                        Margin="4,0,8,0" VerticalAlignment="Center" Click="NewTab_Click"
+                        ToolTip="New tab (Ctrl+N)">
+                    <TextBlock Text="&#xE710;" FontFamily="{StaticResource App.IconFontFamily}" FontSize="13" />
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- ============================= Info bar ============================= -->
+        <Border x:Name="InfoBar" Grid.Row="3" Visibility="Collapsed"
+                Background="{DynamicResource App.InfoBarBackgroundBrush}"
+                BorderBrush="{DynamicResource App.InfoBarBorderBrush}" BorderThickness="0,0,0,1"
+                Padding="14,8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="&#xE946;" FontFamily="{StaticResource App.IconFontFamily}" FontSize="14"
+                           VerticalAlignment="Center" Foreground="{DynamicResource App.AccentBrush}" />
+                <TextBlock x:Name="InfoBarText" Grid.Column="1" Margin="10,0,12,0" TextWrapping="Wrap"
+                           VerticalAlignment="Center" FontSize="12.5" />
+                <Button Grid.Column="2" Content="Dismiss" Style="{StaticResource CompactButton}"
+                        VerticalAlignment="Center" Click="DismissInfoBar_Click" />
+            </Grid>
+        </Border>
+
+        <!-- ============================= Editor ============================= -->
+        <Grid Grid.Row="4" Background="{DynamicResource Editor.BackgroundBrush}">
+            <avalonedit:TextEditor x:Name="Editor"
+                                   Background="{DynamicResource Editor.BackgroundBrush}"
+                                   Foreground="{DynamicResource Editor.ForegroundBrush}"
+                                   LineNumbersForeground="{DynamicResource Editor.LineNumberBrush}"
+                                   ShowLineNumbers="True" FontFamily="Cascadia Mono" FontSize="14"
+                                   HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                                   BorderThickness="0" Padding="0" WordWrap="False"
+                                   TextOptions.TextFormattingMode="Display" />
+
+            <Border x:Name="FindPanel" Visibility="Collapsed"
+                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Margin="0,12,18,0" Width="566" Padding="10"
+                    Background="{DynamicResource Editor.PanelBackgroundBrush}"
+                    BorderBrush="{DynamicResource Editor.PanelBorderBrush}" BorderThickness="1"
+                    CornerRadius="8">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="22" ShadowDepth="4" Opacity="0.30" Color="#000000" />
+                </Border.Effect>
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="FindBox" MinHeight="30" Margin="0,0,8,0"
+                                 TextChanged="FindBox_TextChanged" KeyDown="FindBox_KeyDown"
+                                 ToolTip="Search text" />
+                        <TextBlock x:Name="SearchCountText" Grid.Column="1" MinWidth="84" TextAlignment="Right"
+                                   VerticalAlignment="Center" FontSize="11.5"
+                                   Foreground="{DynamicResource App.TextSecondaryBrush}" />
+                        <Button x:Name="ReplaceToggleButton" Grid.Column="2" Style="{StaticResource IconButton}"
+                                Width="28" Height="28" Margin="6,0,0,0" Click="ToggleReplaceRow_Click"
+                                ToolTip="Toggle replace">
+                            <TextBlock Text="&#xE70D;" FontFamily="{StaticResource App.IconFontFamily}" FontSize="9" />
+                        </Button>
+                        <Button Grid.Column="3" Style="{StaticResource IconButton}" Width="28" Height="28"
+                                Click="FindPrevious_Click" ToolTip="Find previous (Shift+F3)">
+                            <TextBlock Text="&#xE74A;" FontFamily="{StaticResource App.IconFontFamily}" FontSize="9" />
+                        </Button>
+                        <Button Grid.Column="4" Style="{StaticResource IconButton}" Width="28" Height="28"
+                                Click="FindNext_Click" ToolTip="Find next (F3)">
+                            <TextBlock Text="&#xE74B;" FontFamily="{StaticResource App.IconFontFamily}" FontSize="9" />
+                        </Button>
+                        <Button Grid.Column="5" Style="{StaticResource IconButton}" Width="28" Height="28"
+                                Click="CloseFindPanel_Click" ToolTip="Close (Esc)">
+                            <TextBlock Text="&#xE8BB;" FontFamily="{StaticResource App.IconFontFamily}" FontSize="8" />
+                        </Button>
+                    </Grid>
+
+                    <Grid x:Name="ReplaceRow" Margin="0,8,0,0" Visibility="Collapsed">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="ReplaceBox" MinHeight="30" Margin="0,0,8,0"
+                                 KeyDown="ReplaceBox_KeyDown" ToolTip="Replacement text" />
+                        <Button Grid.Column="1" Content="Replace" Style="{StaticResource CompactButton}"
+                                Click="ReplaceOne_Click" Margin="0,0,6,0" />
+                        <Button Grid.Column="2" Content="Replace all" Style="{StaticResource CompactButton}"
+                                Click="ReplaceAll_Click" />
+                    </Grid>
+
+                    <Grid Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal">
+                            <ToggleButton x:Name="MatchCaseToggle" Style="{StaticResource OptionToggleButton}"
+                                          Content="Aa" ToolTip="Match case" Margin="0,0,5,0"
+                                          Checked="SearchOptionChanged" Unchecked="SearchOptionChanged" />
+                            <ToggleButton x:Name="WholeWordToggle" Style="{StaticResource OptionToggleButton}"
+                                          Content="ab" ToolTip="Match whole word" Margin="0,0,5,0"
+                                          Checked="SearchOptionChanged" Unchecked="SearchOptionChanged" />
+                            <ToggleButton x:Name="RegexToggle" Style="{StaticResource OptionToggleButton}"
+                                          Content=".*" ToolTip="Use regular expression"
+                                          Checked="SearchOptionChanged" Unchecked="SearchOptionChanged" />
+                        </StackPanel>
+                        <TextBlock x:Name="SearchErrorText" Grid.Column="1" Margin="10,0,0,0"
+                                   FontSize="11.5" Foreground="{DynamicResource App.DangerBrush}"
+                                   TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- ============================= Status bar ============================= -->
+        <Border x:Name="StatusBarBorder" Grid.Row="5" Height="26"
+                Background="{DynamicResource App.StatusBarBrush}"
+                BorderBrush="{DynamicResource App.DividerBrush}" BorderThickness="0,1,0,0">
+            <Grid Margin="10,0,8,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding ActiveDocument.CaretDisplay}" FontSize="11"
+                               Foreground="{DynamicResource App.StatusTextBrush}" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding ActiveDocument.SelectionDisplay}" FontSize="11" Margin="12,0,0,0"
+                               Foreground="{DynamicResource App.StatusTextBrush}" VerticalAlignment="Center" />
+                    <Border Width="1" Height="12" Background="{DynamicResource App.DividerBrush}" Margin="12,0" />
+                    <TextBlock Text="{Binding ActiveDocument.LineCountDisplay}" FontSize="11"
+                               Foreground="{DynamicResource App.StatusTextBrush}" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding ActiveDocument.CharacterCountDisplay}" FontSize="11" Margin="12,0,0,0"
+                               Foreground="{DynamicResource App.StatusTextBrush}" VerticalAlignment="Center" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button x:Name="EncodingButton" Style="{StaticResource StatusBarButton}"
+                            Content="{Binding ActiveDocument.EncodingDisplay}" Click="EncodingButton_Click"
+                            ToolTip="File encoding" />
+                    <Button x:Name="LineEndingButton" Style="{StaticResource StatusBarButton}"
+                            Content="{Binding ActiveDocument.LineEndingDisplay}" Click="LineEndingButton_Click"
+                            ToolTip="Line endings" />
+                    <Button x:Name="LanguageButton" Style="{StaticResource StatusBarButton}"
+                            Content="{Binding ActiveDocument.LanguageDisplay}" Click="LanguageButton_Click"
+                            ToolTip="Language mode" />
+                    <Button x:Name="InsertModeButton" Style="{StaticResource StatusBarButton}"
+                            Content="{Binding ActiveDocument.InsertModeDisplay}" Click="InsertModeButton_Click"
+                            ToolTip="Insert / overwrite mode" />
+                    <Button x:Name="ZoomButton" Style="{StaticResource StatusBarButton}" Content="100%"
+                            Click="ZoomButton_Click" ToolTip="Zoom" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

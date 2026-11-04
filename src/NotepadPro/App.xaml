@@ -1,0 +1,23 @@
+﻿<Application x:Class="NotepadPro.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:NotepadPro"
+             xmlns:converters="clr-namespace:NotepadPro.Converters"
+             ShutdownMode="OnMainWindowClose">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/Dark.xaml" />
+                <ResourceDictionary Source="Themes/Controls.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+            <converters:InverseBoolConverter x:Key="InverseBool" />
+            <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibility" />
+            <converters:NullToVisibilityConverter x:Key="NullToVisibility" />
+            <converters:HexToBrushConverter x:Key="HexToBrush" />
+            <converters:BooleanToOpacityConverter x:Key="BoolToOpacity" />
+            <converters:ZoomTextConverter x:Key="ZoomText" />
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

@@ -1,0 +1,322 @@
+<dialogs:DialogWindow x:Class="NotepadPro.Dialogs.SettingsWindow"
+                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:dialogs="clr-namespace:NotepadPro.Dialogs"
+                     xmlns:controls="clr-namespace:NotepadPro.Controls"
+                     Title="Settings"
+                     Width="920" Height="700">
+    <dialogs:DialogWindow.Resources>
+        <Style x:Key="SettingCheck" TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+            <Setter Property="Margin" Value="0,0,0,10" />
+        </Style>
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{DynamicResource App.TextSecondaryBrush}" />
+            <Setter Property="Margin" Value="0,0,0,5" />
+        </Style>
+    </dialogs:DialogWindow.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="36" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <controls:DialogTitleBar Grid.Row="0" />
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="214" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Background="{DynamicResource App.SurfaceAltBrush}"
+                    BorderBrush="{DynamicResource App.BorderBrush}" BorderThickness="0,0,1,0">
+                <ListBox x:Name="NavList" SelectedIndex="0" SelectionChanged="NavList_SelectionChanged"
+                         Background="Transparent" Padding="10,14">
+                    <ListBoxItem Tag="appearance">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE790;" FontFamily="{StaticResource App.IconFontFamily}"
+                                       Width="26" VerticalAlignment="Center" />
+                            <TextBlock Text="Appearance" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem Tag="editor">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE70F;" FontFamily="{StaticResource App.IconFontFamily}"
+                                       Width="26" VerticalAlignment="Center" />
+                            <TextBlock Text="Editor" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem Tag="files">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE8B7;" FontFamily="{StaticResource App.IconFontFamily}"
+                                       Width="26" VerticalAlignment="Center" />
+                            <TextBlock Text="Files &amp; recovery" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem Tag="colors">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE790;" FontFamily="{StaticResource App.IconFontFamily}"
+                                       Width="26" VerticalAlignment="Center" />
+                            <TextBlock Text="Syntax colors" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem Tag="advanced">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE713;" FontFamily="{StaticResource App.IconFontFamily}"
+                                       Width="26" VerticalAlignment="Center" />
+                            <TextBlock Text="Advanced" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ListBoxItem>
+                </ListBox>
+            </Border>
+
+            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <Grid Margin="28,22,24,24">
+                    <!-- Appearance -->
+                    <StackPanel x:Name="AppearanceSection">
+                        <TextBlock Text="Appearance" Style="{StaticResource DialogTitleText}" />
+                        <TextBlock Style="{StaticResource HintText}" Margin="0,4,0,20"
+                                   Text="Theme and typography apply to the whole application and the editor." />
+
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Margin="0,0,14,0">
+                                <TextBlock Text="Application theme" Style="{StaticResource FieldLabel}" />
+                                <ComboBox x:Name="ThemeModeBox" SelectionChanged="ThemeModeBox_SelectionChanged">
+                                    <ComboBoxItem Content="Use Windows setting" />
+                                    <ComboBoxItem Content="Light" />
+                                    <ComboBoxItem Content="Dark" />
+                                </ComboBox>
+                                <TextBlock Style="{StaticResource HintText}" Margin="0,5,0,0"
+                                           Text="System follows the Windows app theme and updates on restart." />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Editor color scheme" Style="{StaticResource FieldLabel}" />
+                                <ComboBox x:Name="SchemeBox" DisplayMemberPath="DisplayName"
+                                          SelectionChanged="SchemeBox_SelectionChanged" />
+                                <TextBlock Style="{StaticResource HintText}" Margin="0,5,0,0"
+                                           Text="Use Auto to follow the light or dark theme." />
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Margin="0,0,14,0">
+                                <TextBlock Text="Editor font" Style="{StaticResource FieldLabel}" />
+                                <TextBox x:Name="FontFamilyBox" TextChanged="FontFamilyBox_TextChanged" />
+                                <TextBlock Style="{StaticResource HintText}" Margin="0,5,0,0"
+                                           Text="For example Cascadia Mono, Consolas, or Segoe UI." />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <Grid>
+                                    <TextBlock Text="Font size" Style="{StaticResource FieldLabel}" />
+                                    <TextBlock x:Name="FontSizeText" HorizontalAlignment="Right"
+                                               FontSize="12" Foreground="{DynamicResource App.TextSecondaryBrush}" />
+                                </Grid>
+                                <Slider x:Name="FontSizeSlider" Minimum="8" Maximum="32" TickFrequency="1"
+                                        IsSnapToTickEnabled="True" ValueChanged="FontSizeSlider_ValueChanged"
+                                        VerticalAlignment="Center" Height="32" />
+                            </StackPanel>
+                        </Grid>
+
+                        <Border Style="{StaticResource DialogCard}" Padding="14">
+                            <StackPanel>
+                                <TextBlock x:Name="FontPreview" Text="The quick brown fox jumps over the lazy dog. 0123456789"
+                                           FontSize="15" TextTrimming="CharacterEllipsis" />
+                                <TextBlock x:Name="FontPreviewMeta" Style="{StaticResource HintText}" Margin="0,5,0,0" />
+                            </StackPanel>
+                        </Border>
+
+                        <TextBlock Text="Editor decorations" Style="{StaticResource SectionHeaderText}" Margin="0,22,0,8" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <CheckBox x:Name="LineNumbersCheck" Content="Show line numbers" Style="{StaticResource SettingCheck}" />
+                                <CheckBox x:Name="CurrentLineCheck" Content="Highlight current line" Style="{StaticResource SettingCheck}" />
+                                <CheckBox x:Name="IndentGuidesCheck" Content="Show indentation guides" Style="{StaticResource SettingCheck}" />
+                                <CheckBox x:Name="MatchBracketsCheck" Content="Match brackets" Style="{StaticResource SettingCheck}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <CheckBox x:Name="StatusBarCheck" Content="Show status bar" Style="{StaticResource SettingCheck}" />
+                                <CheckBox x:Name="WhitespaceCheck" Content="Show spaces and tabs" Style="{StaticResource SettingCheck}" />
+                                <CheckBox x:Name="EndOfLineCheck" Content="Show line endings" Style="{StaticResource SettingCheck}" />
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- Editor -->
+                    <StackPanel x:Name="EditorSection" Visibility="Collapsed">
+                        <TextBlock Text="Editor" Style="{StaticResource DialogTitleText}" />
+                        <TextBlock Style="{StaticResource HintText}" Margin="0,4,0,20"
+                                   Text="Indentation, wrapping, folding, and autosave behavior." />
+
+                        <Grid Margin="0,0,0,14">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Margin="0,0,14,0">
+                                <TextBlock Text="Tab size" Style="{StaticResource FieldLabel}" />
+                                <ComboBox x:Name="TabSizeBox" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Autosave recovery interval (seconds)" Style="{StaticResource FieldLabel}" />
+                                <TextBox x:Name="AutoSaveSecondsBox" />
+                                <TextBlock Style="{StaticResource HintText}" Margin="0,5,0,0"
+                                           Text="0 disables the timer. Snapshots are written only when a document is modified." />
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <CheckBox x:Name="ConvertTabsCheck" Content="Insert spaces for tabs" Style="{StaticResource SettingCheck}" />
+                                <CheckBox x:Name="WordWrapCheck" Content="Word wrap" Style="{StaticResource SettingCheck}" />
+                                <CheckBox x:Name="FoldingCheck" Content="Enable code folding" Style="{StaticResource SettingCheck}" />
+                                <CheckBox x:Name="AutoIndentCheck" Content="Smart auto-indent" Style="{StaticResource SettingCheck}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <CheckBox x:Name="TrimOnSaveCheck" Content="Trim trailing whitespace on save" Style="{StaticResource SettingCheck}" />
+                                <CheckBox x:Name="DragDropCheck" Content="Allow drag and drop of selected text" Style="{StaticResource SettingCheck}" />
+                                <CheckBox x:Name="RestoreSessionCheck" Content="Restore tabs from the previous session" Style="{StaticResource SettingCheck}" />
+                                <CheckBox x:Name="AutoRecoveryCheck" Content="Keep crash recovery snapshots" Style="{StaticResource SettingCheck}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <Border Style="{StaticResource DialogCard}" Padding="14" Margin="0,14,0,0">
+                            <StackPanel>
+                                <TextBlock Text="Recovery safety" Style="{StaticResource SectionHeaderText}" />
+                                <TextBlock Style="{StaticResource HintText}"
+                                           Text="Unsaved changes are snapshotted into your local application data folder. After a crash or forced shutdown, Notepad Pro offers those snapshots back the next time it starts." />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Files -->
+                    <StackPanel x:Name="FilesSection" Visibility="Collapsed">
+                        <TextBlock Text="Files &amp; recovery" Style="{StaticResource DialogTitleText}" />
+                        <TextBlock Style="{StaticResource HintText}" Margin="0,4,0,20"
+                                   Text="Defaults used for newly created documents. Existing files keep their detected encoding and line endings." />
+
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Margin="0,0,14,0">
+                                <TextBlock Text="Default encoding" Style="{StaticResource FieldLabel}" />
+                                <ComboBox x:Name="EncodingBox" DisplayMemberPath="Name" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Default line ending" Style="{StaticResource FieldLabel}" />
+                                <ComboBox x:Name="LineEndingBox" DisplayMemberPath="Name" />
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="Recent files" Style="{StaticResource SectionHeaderText}" Margin="0,8,0,8" />
+                        <Grid>
+                            <TextBlock x:Name="RecentSummaryText" Style="{StaticResource HintText}" VerticalAlignment="Center" />
+                            <Button x:Name="ClearRecentButton" Content="Clear recent files" HorizontalAlignment="Right" Click="ClearRecent_Click" />
+                        </Grid>
+
+                        <TextBlock Text="Storage locations" Style="{StaticResource SectionHeaderText}" Margin="0,24,0,8" />
+                        <Border Style="{StaticResource DialogCard}" Padding="14">
+                            <StackPanel>
+                                <TextBlock Text="Settings and session" Style="{StaticResource FieldLabel}" />
+                                <TextBlock x:Name="SettingsPathText" FontFamily="Cascadia Mono, Consolas" FontSize="11.5"
+                                           TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="Recovery snapshots" Style="{StaticResource FieldLabel}" Margin="0,12,0,5" />
+                                <TextBlock x:Name="RecoveryPathText" FontFamily="Cascadia Mono, Consolas" FontSize="11.5"
+                                           TextTrimming="CharacterEllipsis" />
+                                <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
+                                    <Button Content="Open settings folder" Click="OpenSettingsFolder_Click" Margin="0,0,8,0" />
+                                    <Button Content="Open recovery folder" Click="OpenRecoveryFolder_Click" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Syntax colours -->
+                    <StackPanel x:Name="ColorsSection" Visibility="Collapsed">
+                        <TextBlock Text="Syntax colors" Style="{StaticResource DialogTitleText}" />
+                        <TextBlock x:Name="SyntaxSchemeText" Style="{StaticResource HintText}" Margin="0,4,0,14" />
+
+                        <Border Style="{StaticResource DialogCard}" Padding="14" Margin="0,0,0,14">
+                            <Grid>
+                                <TextBlock Style="{StaticResource HintText}" VerticalAlignment="Center"
+                                           Text="Click a swatch or type a hex value. Overrides are stored per color scheme." />
+                                <Button Content="Reset this scheme" HorizontalAlignment="Right" Click="ResetSyntax_Click" />
+                            </Grid>
+                        </Border>
+
+                        <StackPanel x:Name="SyntaxPanel" />
+                    </StackPanel>
+
+                    <!-- Advanced -->
+                    <StackPanel x:Name="AdvancedSection" Visibility="Collapsed">
+                        <TextBlock Text="Advanced" Style="{StaticResource DialogTitleText}" />
+                        <TextBlock Style="{StaticResource HintText}" Margin="0,4,0,20"
+                                   Text="Maintenance actions for configuration, recovery data, and window placement." />
+
+                        <Border Style="{StaticResource DialogCard}" Padding="16" Margin="0,0,0,14">
+                            <StackPanel>
+                                <TextBlock Text="Window placement" Style="{StaticResource SectionHeaderText}" />
+                                <TextBlock Style="{StaticResource HintText}" Margin="0,0,0,12"
+                                           Text="If the window opens off-screen after a display change, reset its saved position and size." />
+                                <Button Content="Reset window placement" HorizontalAlignment="Left" Click="ResetWindow_Click" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource DialogCard}" Padding="16" Margin="0,0,0,14">
+                            <StackPanel>
+                                <TextBlock Text="Reset preferences" Style="{StaticResource SectionHeaderText}" />
+                                <TextBlock Style="{StaticResource HintText}" Margin="0,0,0,12"
+                                           Text="Restores every setting, including theme and syntax color overrides, to its default value. Open documents are not affected." />
+                                <Button Content="Reset all settings" HorizontalAlignment="Left"
+                                        Style="{StaticResource DangerButton}" Click="ResetSettings_Click" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource DialogCard}" Padding="16">
+                            <StackPanel>
+                                <TextBlock Text="Configuration file" Style="{StaticResource SectionHeaderText}" />
+                                <TextBlock x:Name="AdvancedConfigText" FontFamily="Cascadia Mono, Consolas"
+                                           FontSize="11.5" TextWrapping="Wrap" />
+                                <Button Content="Open settings folder" HorizontalAlignment="Left" Margin="0,12,0,0"
+                                        Click="OpenSettingsFolder_Click" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+        </Grid>
+
+        <Border Grid.Row="2" Background="{DynamicResource App.SurfaceAltBrush}"
+                BorderBrush="{DynamicResource App.BorderBrush}" BorderThickness="0,1,0,0"
+                Padding="24,12">
+            <Grid>
+                <TextBlock Style="{StaticResource HintText}" VerticalAlignment="Center"
+                           Text="Changes take effect when you choose OK." />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Cancel" IsCancel="True" Click="Cancel_Click" Margin="0,0,8,0" />
+                    <Button Content="OK" Style="{StaticResource PrimaryButton}" IsDefault="True" Click="Ok_Click" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</dialogs:DialogWindow>

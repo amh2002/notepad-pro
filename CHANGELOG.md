@@ -1,0 +1,41 @@
+# Changelog
+
+All notable changes to Notepad Pro are documented here.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.0.0] - 2026-11-04
+
+First public release.
+
+### Added
+
+- Native Windows 11–style shell with a custom title bar, menu bar, tab strip, editor, and status bar.
+- Multi-tab editing with modified indicators, tab context menus, session restore, and
+  reopen-closed-tab.
+- AvalonEdit-based editor with line numbers, current-line highlight, indentation guides, bracket
+  matching, whitespace and line-ending markers, code folding, word wrap, and zoom.
+- Runtime-generated syntax highlighting for 21 languages, with extension-based detection and manual
+  per-tab overrides.
+- Find and replace overlay with match counts, case-sensitive, whole-word, and regular-expression
+  modes, highlight-all, and Replace All.
+- Full editing command set: duplicate/delete/move lines, toggle comment, indent/outdent, trim
+  trailing whitespace, case conversion, and insert date/time.
+- Encoding detection and preservation for UTF-8, UTF-8 with BOM, UTF-16 LE/BE, UTF-32, and ANSI;
+  CRLF/LF/CR preservation; atomic saves.
+- System, Light, and Dark application themes, six editor color schemes, and per-scheme syntax color
+  overrides with a color picker.
+- Settings, Go to Line, About, Shortcuts, recovery, and confirmation dialogs that follow the active
+  theme.
+- Background recovery snapshots, unsaved-change prompts, external-change detection, and error
+  logging.
+- Per-user installer and uninstaller scripts with Start Menu and Open With registration.
+- GitHub Actions build/test workflow and tag-driven release workflow.
+- 68 unit tests covering the Core layer.
+
+### Known limitations
+
+- No multi-cursor, minimap, split view, or native line spacing.
+- x64 only.
+- Release binaries are not code-signed.

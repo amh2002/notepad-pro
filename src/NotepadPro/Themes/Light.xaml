@@ -1,0 +1,63 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Application shell: light -->
+    <SolidColorBrush x:Key="App.WindowBrush" Color="#F3F3F3" />
+    <SolidColorBrush x:Key="App.SurfaceBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="App.SurfaceAltBrush" Color="#F9F9F9" />
+    <SolidColorBrush x:Key="App.SurfaceRaisedBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="App.BorderBrush" Color="#E3E3E3" />
+    <SolidColorBrush x:Key="App.StrongBorderBrush" Color="#C8C8C8" />
+    <SolidColorBrush x:Key="App.TextPrimaryBrush" Color="#1A1A1A" />
+    <SolidColorBrush x:Key="App.TextSecondaryBrush" Color="#5D5D5D" />
+    <SolidColorBrush x:Key="App.TextTertiaryBrush" Color="#8A8A8A" />
+    <SolidColorBrush x:Key="App.AccentBrush" Color="#0067C0" />
+    <SolidColorBrush x:Key="App.AccentHoverBrush" Color="#0078D4" />
+    <SolidColorBrush x:Key="App.AccentPressedBrush" Color="#005A9E" />
+    <SolidColorBrush x:Key="App.AccentTextBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="App.SelectionBrush" Color="#CCE4F7" />
+    <SolidColorBrush x:Key="App.HoverBrush" Color="#EAEAEA" />
+    <SolidColorBrush x:Key="App.PressedBrush" Color="#DDDDDD" />
+    <SolidColorBrush x:Key="App.TitleBarBrush" Color="#F3F3F3" />
+    <SolidColorBrush x:Key="App.TabActiveBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="App.TabInactiveBrush" Color="#F3F3F3" />
+    <SolidColorBrush x:Key="App.TabHoverBrush" Color="#EAEAEA" />
+    <SolidColorBrush x:Key="App.MenuBackgroundBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="App.MenuBorderBrush" Color="#E0E0E0" />
+    <SolidColorBrush x:Key="App.MenuHoverBrush" Color="#F0F0F0" />
+    <SolidColorBrush x:Key="App.StatusBarBrush" Color="#F3F3F3" />
+    <SolidColorBrush x:Key="App.StatusTextBrush" Color="#4D4D4D" />
+    <SolidColorBrush x:Key="App.DangerBrush" Color="#C42B1C" />
+    <SolidColorBrush x:Key="App.DangerHoverBrush" Color="#C42B1C" />
+    <SolidColorBrush x:Key="App.SuccessBrush" Color="#0F7B0F" />
+    <SolidColorBrush x:Key="App.WarningBrush" Color="#9D5D00" />
+    <SolidColorBrush x:Key="App.WarningBackgroundBrush" Color="#FFF4CE" />
+    <SolidColorBrush x:Key="App.CloseHoverBrush" Color="#C42B1C" />
+    <SolidColorBrush x:Key="App.InputBackgroundBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="App.InputBorderBrush" Color="#D6D6D6" />
+    <SolidColorBrush x:Key="App.InputFocusBorderBrush" Color="#0067C0" />
+    <SolidColorBrush x:Key="App.ScrollThumbBrush" Color="#C4C4C4" />
+    <SolidColorBrush x:Key="App.ScrollThumbHoverBrush" Color="#9E9E9E" />
+    <SolidColorBrush x:Key="App.DividerBrush" Color="#E8E8E8" />
+    <SolidColorBrush x:Key="App.InfoBarBackgroundBrush" Color="#E8F4FF" />
+    <SolidColorBrush x:Key="App.InfoBarBorderBrush" Color="#BBDDF7" />
+    <SolidColorBrush x:Key="App.OverlayBrush" Color="#66000000" />
+    <SolidColorBrush x:Key="App.SearchHighlightBrush" Color="#F9D77E" />
+
+    <!-- Editor defaults (overridden at runtime by ThemeService) -->
+    <SolidColorBrush x:Key="Editor.BackgroundBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="Editor.ForegroundBrush" Color="#1E1E1E" />
+    <SolidColorBrush x:Key="Editor.GutterBrush" Color="#F7F7F7" />
+    <SolidColorBrush x:Key="Editor.LineNumberBrush" Color="#8C8C8C" />
+    <SolidColorBrush x:Key="Editor.CurrentLineBrush" Color="#F3F7FB" />
+    <SolidColorBrush x:Key="Editor.CurrentLineBorderBrush" Color="#E3EDF7" />
+    <SolidColorBrush x:Key="Editor.SelectionBrush" Color="#ADD6FF" />
+    <SolidColorBrush x:Key="Editor.SelectionBorderBrush" Color="#99C7F5" />
+    <SolidColorBrush x:Key="Editor.IndentGuideBrush" Color="#E0E0E0" />
+    <SolidColorBrush x:Key="Editor.BracketBrush" Color="#8A8A8A" />
+    <SolidColorBrush x:Key="Editor.BracketBackgroundBrush" Color="#DDEBF7" />
+    <SolidColorBrush x:Key="Editor.SearchMatchBrush" Color="#FFF1A8" />
+    <SolidColorBrush x:Key="Editor.SearchCurrentBrush" Color="#FFC94D" />
+    <SolidColorBrush x:Key="Editor.CaretBrush" Color="#0067C0" />
+    <SolidColorBrush x:Key="Editor.PanelBackgroundBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="Editor.PanelBorderBrush" Color="#D7D7D7" />
+</ResourceDictionary>
