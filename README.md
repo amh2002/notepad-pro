@@ -5,6 +5,7 @@
 **A fast, native Windows text and code editor — the simplicity of Notepad, with the features you actually miss.**
 
 [![Latest release](https://img.shields.io/github/v/release/amh2002/notepad-pro?style=flat-square&color=0078D4)](https://github.com/amh2002/notepad-pro/releases/latest)
+[![Build](https://img.shields.io/github/actions/workflow/status/amh2002/notepad-pro/build.yml?style=flat-square&label=build)](https://github.com/amh2002/notepad-pro/actions/workflows/build.yml)
 [![Downloads](https://img.shields.io/github/downloads/amh2002/notepad-pro/total?style=flat-square)](https://github.com/amh2002/notepad-pro/releases)
 [![License](https://img.shields.io/github/license/amh2002/notepad-pro?style=flat-square)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0078D4?style=flat-square)](#requirements)
