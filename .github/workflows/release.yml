@@ -4,9 +4,18 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing tag to build and publish (for example v1.0.0)
+        required: true
+        type: string
 
 permissions:
   contents: write
+
+env:
+  TAG: ${{ inputs.tag || github.ref_name }}
 
 jobs:
   release:
@@ -17,6 +26,7 @@ jobs:
       - name: Check out
         uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.tag || github.ref_name }}
           fetch-depth: 0
 
       - name: Set up .NET
@@ -33,23 +43,30 @@ jobs:
       - name: Package release assets
         shell: pwsh
         run: |
-          $version = "${{ github.ref_name }}".TrimStart('v')
+          $version = $env:TAG.TrimStart('v')
           New-Item -ItemType Directory -Force -Path package | Out-Null
           Copy-Item dist/NotepadPro.exe package/
-          Copy-Item README.md, LICENSE, install.ps1, uninstall.ps1 package/
+          Copy-Item README.md, LICENSE, CHANGELOG.md, install.ps1, uninstall.ps1 package/
           Compress-Archive -Path package/* -DestinationPath "NotepadPro-$version-win-x64.zip"
           $exeHash = (Get-FileHash dist/NotepadPro.exe -Algorithm SHA256).Hash
           $zipHash = (Get-FileHash "NotepadPro-$version-win-x64.zip" -Algorithm SHA256).Hash
           "$exeHash  NotepadPro.exe" | Set-Content SHA256SUMS.txt
           "$zipHash  NotepadPro-$version-win-x64.zip" | Add-Content SHA256SUMS.txt
 
-      - name: Create GitHub release
+      - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: pwsh
         run: |
-          $tag = "${{ github.ref_name }}"
+          $tag = $env:TAG
           $version = $tag.TrimStart('v')
-          gh release create $tag dist/NotepadPro.exe "NotepadPro-$version-win-x64.zip" SHA256SUMS.txt `
-            --title "Notepad Pro $version" `
-            --generate-notes
+          $existing = gh release view $tag --json tagName 2>$null
+          if ($LASTEXITCODE -eq 0 -and $existing) {
+            Write-Host "Release $tag already exists; updating assets."
+            gh release upload $tag dist/NotepadPro.exe "NotepadPro-$version-win-x64.zip" SHA256SUMS.txt --clobber
+          }
+          else {
+            gh release create $tag dist/NotepadPro.exe "NotepadPro-$version-win-x64.zip" SHA256SUMS.txt `
+              --title "Notepad Pro $version" `
+              --generate-notes
+          }
