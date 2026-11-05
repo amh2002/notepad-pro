@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotepadPro.Core.Tests", "tests\NotepadPro.Core.Tests\NotepadPro.Core.Tests.csproj", "{BF6D9E05-3556-44DA-BDBD-97A6DD45250D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotepadPro.App.Tests", "tests\NotepadPro.App.Tests\NotepadPro.App.Tests.csproj", "{B7BA06EB-913A-4F1E-8598-8CD11EFD64BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,18 @@ Global
 		{BF6D9E05-3556-44DA-BDBD-97A6DD45250D}.Release|x64.Build.0 = Release|Any CPU
 		{BF6D9E05-3556-44DA-BDBD-97A6DD45250D}.Release|x86.ActiveCfg = Release|Any CPU
 		{BF6D9E05-3556-44DA-BDBD-97A6DD45250D}.Release|x86.Build.0 = Release|Any CPU
+		{B7BA06EB-913A-4F1E-8598-8CD11EFD64BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7BA06EB-913A-4F1E-8598-8CD11EFD64BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7BA06EB-913A-4F1E-8598-8CD11EFD64BA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B7BA06EB-913A-4F1E-8598-8CD11EFD64BA}.Debug|x64.Build.0 = Debug|Any CPU
+		{B7BA06EB-913A-4F1E-8598-8CD11EFD64BA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B7BA06EB-913A-4F1E-8598-8CD11EFD64BA}.Debug|x86.Build.0 = Debug|Any CPU
+		{B7BA06EB-913A-4F1E-8598-8CD11EFD64BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7BA06EB-913A-4F1E-8598-8CD11EFD64BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7BA06EB-913A-4F1E-8598-8CD11EFD64BA}.Release|x64.ActiveCfg = Release|Any CPU
+		{B7BA06EB-913A-4F1E-8598-8CD11EFD64BA}.Release|x64.Build.0 = Release|Any CPU
+		{B7BA06EB-913A-4F1E-8598-8CD11EFD64BA}.Release|x86.ActiveCfg = Release|Any CPU
+		{B7BA06EB-913A-4F1E-8598-8CD11EFD64BA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,5 +81,6 @@ Global
 		{0F22A54D-61B4-464A-881A-DD72E3CBA24C} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{4C715DC8-6FD6-403D-999E-B29AC77E6882} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{BF6D9E05-3556-44DA-BDBD-97A6DD45250D} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
+		{B7BA06EB-913A-4F1E-8598-8CD11EFD64BA} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 	EndGlobalSection
 EndGlobal

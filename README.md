@@ -29,7 +29,7 @@ no placeholders — every menu item, shortcut, and setting does something.
 | File | Description |
 | --- | --- |
 | `NotepadPro.exe` | Portable single file. Double-click and go — no installation required. |
-| `NotepadPro-1.0.1-win-x64.zip` | Portable bundle: executable, README, license, and install/uninstall scripts. |
+| `NotepadPro-1.0.2-win-x64.zip` | Portable bundle: executable, README, license, and install/uninstall scripts. |
 | `SHA256SUMS.txt` | SHA-256 checksums for both downloads. |
 
 **Requirements:** Windows 10 or 11, 64-bit. The executable is self-contained, so the .NET runtime is
@@ -180,8 +180,8 @@ Title Case, Sentence case), insert date/time, and full keyboard shortcut coverag
 # Restore and build
 dotnet build NotepadPro.sln -c Release
 
-# Run the tests
-dotnet test tests\NotepadPro.Core.Tests\NotepadPro.Core.Tests.csproj
+# Run all tests (Core and WPF syntax-highlighting tests)
+dotnet test NotepadPro.sln -c Release
 
 # Run from source
 dotnet run --project src\NotepadPro\NotepadPro.csproj
@@ -193,7 +193,7 @@ dotnet publish src\NotepadPro\NotepadPro.csproj -c Release -o dist `
 
 The published executable is `dist\NotepadPro.exe` (about 70 MB, self-contained).
 
-Pushing a tag such as `v1.0.1` runs the [release workflow](.github/workflows/release.yml), which
+Pushing a tag such as `v1.0.2` runs the [release workflow](.github/workflows/release.yml), which
 rebuilds, retests, packages the zip, and publishes a GitHub release with checksums.
 
 ## Project layout
@@ -213,6 +213,7 @@ src/
     MainWindow.xaml(.cs)     Shell, menus, tabs, status bar, and command orchestration
 tests/
   NotepadPro.Core.Tests/     xUnit tests for search, encodings, settings, recovery, languages
+  NotepadPro.App.Tests/      WPF-layer tests that load and verify every generated syntax definition
 .github/workflows/           CI build/test and tag-driven release automation
 install.ps1                  Per-user installer
 uninstall.ps1                Per-user uninstaller
@@ -226,7 +227,7 @@ uninstall.ps1                Per-user uninstaller
   active color scheme, then cached per language/palette.
 - Search uses a custom overlay and background renderer, not AvalonEdit's stock search panel.
 - Settings and session files are plain JSON written atomically (temporary file + replace).
-- Core logic has no WPF dependency and is covered by 94 unit tests.
+- Core logic has no WPF dependency and is covered by 94 unit tests; the WPF syntax layer has 48 more.
 
 ## Data locations
 

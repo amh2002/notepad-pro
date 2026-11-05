@@ -5,6 +5,21 @@ All notable changes to Notepad Pro are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2026-11-05
+
+### Fixed
+
+- Syntax highlighting now works in C#, HTML, and XML. AvalonEdit compiles generated rules with
+  `RegexOptions.IgnorePatternWhitespace`, so an unescaped `#` started a regex comment. That made the
+  C# definition invalid (the app silently fell back to plain text) and silently disabled several other
+  rules, including CSS hex colours, Rust attributes, Bash shebangs, and Markdown headings.
+- Generated definitions now escape every literal `#` and are validated before they reach the editor.
+
+### Added
+
+- A WPF-layer test project that loads every language in every colour scheme, compiles every generated
+  regex the same way AvalonEdit does, and verifies real token colours (48 tests; 142 total).
+
 ## [1.0.1] - 2026-11-04
 
 ### Fixed

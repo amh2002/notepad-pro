@@ -13,9 +13,9 @@
     <Description>A fast, modern text and code editor inspired by Windows Notepad.</Description>
     <Company>Notepad Pro contributors</Company>
     <Copyright>Copyright © 2026 Notepad Pro contributors</Copyright>
-    <Version>1.0.1</Version>
-    <FileVersion>1.0.1.0</FileVersion>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <Version>1.0.2</Version>
+    <FileVersion>1.0.2.0</FileVersion>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
     <ApplicationIcon>Assets\NotepadPro.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <PublishSingleFile>true</PublishSingleFile>
@@ -32,6 +32,10 @@
   <ItemGroup>
     <ProjectReference Include="..\NotepadPro.Core\NotepadPro.Core.csproj" />
     <PackageReference Include="AvalonEdit" Version="6.3.1.120" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="NotepadPro.App.Tests" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -38,7 +39,9 @@ public sealed class SyntaxHighlightingService
         }
         catch (Exception ex) when (ex is XmlException or HighlightingDefinitionInvalidException)
         {
-            // A generator defect should never stop the user from editing. Fall back to plain text.
+            // A generator defect should never stop the user from editing. Fall back to plain text,
+            // but leave a trace so the defect is diagnosable instead of invisible.
+            Debug.WriteLine($"Failed to load highlighting for '{language.Id}': {ex}");
             var fallback = BuildPlainText(scheme);
             _cache[key] = fallback;
             return fallback;
@@ -66,7 +69,7 @@ public sealed class SyntaxHighlightingService
         return HighlightingLoader.Load(reader, HighlightingManager.Instance);
     }
 
-    private static string BuildXshd(LanguageDefinition language, EditorColorScheme scheme)
+    internal static string BuildXshd(LanguageDefinition language, EditorColorScheme scheme)
     {
         var sb = new StringBuilder(16 * 1024);
         sb.Append("<SyntaxDefinition name=\"").Append(Xml(language.DisplayName))
@@ -264,7 +267,7 @@ public sealed class SyntaxHighlightingService
         AddBlockComment(sb, "<!--", "-->");
         AddRule(sb, "preprocessor", @"<\?[\w:.-]+");
         AddRule(sb, "preprocessor", @"<!DOCTYPE[^>]*>");
-        AddRule(sb, "escape", @"&(?:#\d+|#x[0-9a-fA-F]+|[A-Za-z][A-Za-z0-9]+);");
+        AddRule(sb, "escape", @"\x26(?:\x23\d+|\x23x[0-9a-fA-F]+|[A-Za-z][A-Za-z0-9]+);");
 
         // A tag from '<' to '>' with attribute and string sub-highlighting.
         sb.Append("    <Span color=\"tag\" begin=\"&lt;/?[A-Za-z][\\w:.-]*\" end=\"/?&gt;\" multiline=\"true\">\n");
@@ -282,7 +285,7 @@ public sealed class SyntaxHighlightingService
         }
 
         AddRule(sb, "number", @"\b\d+(?:\.\d+)?\b");
-        AddRule(sb, "constant", @"&(?:[A-Za-z][A-Za-z0-9]+|#\d+);");
+        AddRule(sb, "constant", @"\x26(?:[A-Za-z][A-Za-z0-9]+|\x23\d+);");
     }
 
     private static void AddCss(StringBuilder sb, LanguageDefinition language, bool scss)
@@ -300,7 +303,7 @@ public sealed class SyntaxHighlightingService
         }
 
         AddRule(sb, "property", @"\b(?:-{0,2}[A-Za-z][\w-]*)(?=\s*:)");
-        AddRule(sb, "constant", @"#[0-9A-Fa-f]{3,8}\b");
+        AddRule(sb, "constant", @"\x23[0-9A-Fa-f]{3,8}\b");
         AddRule(sb, "number", @"\b\d+(?:\.\d+)?(?:%|px|em|rem|vh|vw|deg|ms|s|fr)?\b");
         AddKeywords(sb, "type", language.TypeKeywords, caseInsensitive: true);
         AddKeywords(sb, "builtin", language.Builtins, caseInsensitive: true);
@@ -374,7 +377,7 @@ public sealed class SyntaxHighlightingService
         AddBlockComment(sb, @"/\*", @"\*/");
         AddQuotedString(sb, "\"", '\\');
         AddQuotedString(sb, "'", '\\');
-        AddRule(sb, "preprocessor", @"#!?\[[^\]]*\]|\b[A-Za-z_]\w*!");
+        AddRule(sb, "preprocessor", @"\x23!?\[[^\]]*\]|\b[A-Za-z_]\w*!");
         AddKeywords(sb, "keyword", KeywordsOf("rust"), false);
         AddKeywords(sb, "type", TypesOf("rust"), false);
         AddKeywords(sb, "constant", ConstantsOf("rust"), false);
@@ -386,7 +389,7 @@ public sealed class SyntaxHighlightingService
     private static void AddBash(StringBuilder sb)
     {
         AddLineComment(sb, "#");
-        AddRule(sb, "preprocessor", @"^#!.*$");
+        AddRule(sb, "preprocessor", @"^\x23!.*$");
         AddQuotedString(sb, "\"", '\\');
         AddQuotedString(sb, "'", '\\');
         AddRule(sb, "variable", @"\$\{[^}]+\}|\$[A-Za-z_]\w*|\$[0-9@*#?$!-]");
@@ -428,7 +431,7 @@ public sealed class SyntaxHighlightingService
 
     private static void AddMarkdown(StringBuilder sb)
     {
-        AddRule(sb, "heading", @"^#{1,6}\s.*$");
+        AddRule(sb, "heading", @"^\x23{1,6}\s.*$");
         AddRule(sb, "quote", @"^\s*>\s.*$");
         AddFencedCodeBlock(sb);
         AddRule(sb, "code", @"`[^`\r\n]+`");
@@ -469,7 +472,7 @@ public sealed class SyntaxHighlightingService
 
     private static void AddPreprocessorLine(StringBuilder sb)
     {
-        sb.AppendLine("    <Rule color=\"preprocessor\">^\\s*#\\s*\\w+.*$</Rule>");
+        sb.AppendLine("    <Rule color=\"preprocessor\">^\\s*\\x23\\s*\\w+.*$</Rule>");
     }
 
     private static void AddCommentAnnotation(StringBuilder sb)
@@ -503,7 +506,7 @@ public sealed class SyntaxHighlightingService
     private static void AddVerbatimString(StringBuilder sb, char prefix)
     {
         sb.Append("    <Span color=\"string\" begin=\"").Append(Xml(Regex.Escape(prefix + "\"")))
-          .Append("\" end=\"\"").AppendLine("\" multiline=\"true\">");
+          .Append("\" end=\"").Append(Xml(Regex.Escape("\""))).AppendLine("\" multiline=\"true\">");
         sb.AppendLine("      <RuleSet>");
         sb.AppendLine("        <Span color=\"escape\" begin=\"&quot;&quot;\" end=\".\" />");
         sb.AppendLine("      </RuleSet>");
