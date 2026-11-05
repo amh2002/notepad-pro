@@ -29,7 +29,7 @@ no placeholders — every menu item, shortcut, and setting does something.
 | File | Description |
 | --- | --- |
 | `NotepadPro.exe` | Portable single file. Double-click and go — no installation required. |
-| `NotepadPro-1.0.0-win-x64.zip` | Portable bundle: executable, README, license, and install/uninstall scripts. |
+| `NotepadPro-1.0.1-win-x64.zip` | Portable bundle: executable, README, license, and install/uninstall scripts. |
 | `SHA256SUMS.txt` | SHA-256 checksums for both downloads. |
 
 **Requirements:** Windows 10 or 11, 64-bit. The executable is self-contained, so the .NET runtime is
@@ -90,7 +90,8 @@ Get-Content .\SHA256SUMS.txt
   `JSON` · `XML` · `SQL` · `PHP` · `Go` · `Rust` · `Bash` · `PowerShell` · `YAML` · `Markdown` ·
   `Plain Text`
 
-- Language detection from the file extension, plus manual language override per tab.
+- Language detection from the file extension and from document content, automatic detection when
+  pasting code into a new untitled document, plus manual language override per tab.
 
 ### Search and replace
 
@@ -192,7 +193,7 @@ dotnet publish src\NotepadPro\NotepadPro.csproj -c Release -o dist `
 
 The published executable is `dist\NotepadPro.exe` (about 70 MB, self-contained).
 
-Pushing a tag such as `v1.0.0` runs the [release workflow](.github/workflows/release.yml), which
+Pushing a tag such as `v1.0.1` runs the [release workflow](.github/workflows/release.yml), which
 rebuilds, retests, packages the zip, and publishes a GitHub release with checksums.
 
 ## Project layout
@@ -225,7 +226,7 @@ uninstall.ps1                Per-user uninstaller
   active color scheme, then cached per language/palette.
 - Search uses a custom overlay and background renderer, not AvalonEdit's stock search panel.
 - Settings and session files are plain JSON written atomically (temporary file + replace).
-- Core logic has no WPF dependency and is covered by 68 unit tests.
+- Core logic has no WPF dependency and is covered by 94 unit tests.
 
 ## Data locations
 

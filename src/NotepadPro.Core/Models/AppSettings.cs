@@ -42,6 +42,7 @@ public sealed class AppSettings
     public bool WordWrap { get; set; }
     public bool EnableFolding { get; set; } = true;
     public bool AutoIndent { get; set; } = true;
+    public bool AutoDetectLanguageOnPaste { get; set; } = true;
     public bool TrimTrailingWhitespaceOnSave { get; set; }
     public bool EnableTextDragDrop { get; set; } = true;
     public double ZoomPercent { get; set; } = 100;

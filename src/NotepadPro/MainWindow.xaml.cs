@@ -60,6 +60,8 @@ public partial class MainWindow : Window
     private bool _suppressSearch;
     private bool _sessionRestored;
     private bool _allowClose;
+    private bool _documentWasEmpty = true;
+    private bool _languageDetectionScheduled;
 
     public MainWindow(MainViewModel viewModel, string[]? startupArguments = null)
     {
@@ -312,6 +314,7 @@ public partial class MainWindow : Window
             return;
         }
 
+        _documentWasEmpty = document.TextLength == 0;
         try
         {
             Editor.Document = document.Document;
@@ -871,9 +874,13 @@ public partial class MainWindow : Window
         }
 
         LanguageMenu.Items.Add(new Separator());
-        var detect = new MenuItem { Header = "Detect from file _extension" };
-        detect.Click += AutoDetectLanguage_Click;
-        LanguageMenu.Items.Add(detect);
+        var detectContent = new MenuItem { Header = "Detect from _content" };
+        detectContent.Click += DetectLanguageFromContent_Click;
+        LanguageMenu.Items.Add(detectContent);
+
+        var detectExtension = new MenuItem { Header = "Detect from file e_xtension" };
+        detectExtension.Click += AutoDetectLanguage_Click;
+        LanguageMenu.Items.Add(detectExtension);
     }
 
     private void LanguageItem_Click(object sender, RoutedEventArgs e)
@@ -890,13 +897,71 @@ public partial class MainWindow : Window
         UpdateCommandState();
     }
 
+    private void ApplyDetectedLanguage(DocumentViewModel document, LanguageDefinition language)
+    {
+        if (document.Language.Id == language.Id) return;
+
+        document.SetLanguage(language);
+        if (!ReferenceEquals(document, _activeDocument)) return;
+
+        ApplyHighlighting(document);
+        _editorHost.AttachFolding(language);
+        _editorHost.RestoreFoldedOffsets(document.FoldedOffsets);
+        UpdateMenuChecks();
+        UpdateCommandState();
+    }
+
+    private void TryAutoDetectLanguage(DocumentViewModel document)
+    {
+        _languageDetectionScheduled = false;
+
+        if (!ReferenceEquals(document, _activeDocument) || !Settings.AutoDetectLanguageOnPaste ||
+            !document.IsUntitled || !document.Language.IsPlainText)
+        {
+            return;
+        }
+
+        var detected = LanguageDetector.Detect(document.Text);
+        if (detected is null) return;
+
+        ApplyDetectedLanguage(document, detected);
+        ShowInfo($"Detected {detected.DisplayName} from the pasted content.");
+    }
+
+    private void DetectLanguageFromContent_Click(object sender, RoutedEventArgs e)
+    {
+        var document = _activeDocument;
+        if (document is null) return;
+
+        var detected = LanguageDetector.Detect(document.Text);
+        if (detected is null)
+        {
+            ShowInfo("Could not confidently detect a language from the content. Choose one from the Language menu.",
+                warning: true);
+            return;
+        }
+
+        if (document.Language.Id == detected.Id)
+        {
+            ShowInfo($"The content already looks like {detected.DisplayName}.");
+            return;
+        }
+
+        ApplyDetectedLanguage(document, detected);
+        ShowInfo($"Detected {detected.DisplayName} from the content.");
+    }
+
     private void AutoDetectLanguage_Click(object sender, RoutedEventArgs e)
     {
         var document = _activeDocument;
         if (document is null) return;
-        var detected = document.FilePath is null
-            ? LanguageCatalog.PlainText
-            : LanguageCatalog.DetectFromPath(document.FilePath);
+        if (document.FilePath is null)
+        {
+            DetectLanguageFromContent_Click(sender, e);
+            return;
+        }
+
+        var detected = LanguageCatalog.DetectFromPath(document.FilePath);
         document.SetLanguage(detected);
         ApplyHighlighting(document);
         _editorHost.AttachFolding(detected);
@@ -1168,8 +1233,20 @@ public partial class MainWindow : Window
 
     private void EditorHost_DocumentMutated(object? sender, EventArgs e)
     {
-        _activeDocument?.RefreshStatistics();
+        var document = _activeDocument;
+        var wasEmpty = _documentWasEmpty;
+        _documentWasEmpty = document is null || document.TextLength == 0;
+
+        document?.RefreshStatistics();
         UpdateCommandState();
+
+        if (wasEmpty && !_documentWasEmpty && document is not null &&
+            Settings.AutoDetectLanguageOnPaste && document.IsUntitled && document.Language.IsPlainText &&
+            !_languageDetectionScheduled)
+        {
+            _languageDetectionScheduled = true;
+            Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => TryAutoDetectLanguage(document)));
+        }
 
         if (FindPanel.Visibility != Visibility.Visible) return;
         _searchMatches.Clear();
@@ -1945,6 +2022,15 @@ public partial class MainWindow : Window
             item.Click += LanguageItem_Click;
             menu.Items.Add(item);
         }
+
+        menu.Items.Add(new Separator());
+        var detectContent = new MenuItem { Header = "Detect from content" };
+        detectContent.Click += DetectLanguageFromContent_Click;
+        menu.Items.Add(detectContent);
+
+        var detectExtension = new MenuItem { Header = "Detect from file extension" };
+        detectExtension.Click += AutoDetectLanguage_Click;
+        menu.Items.Add(detectExtension);
 
         menu.IsOpen = true;
     }

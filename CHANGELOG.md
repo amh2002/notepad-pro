@@ -5,6 +5,23 @@ All notable changes to Notepad Pro are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-11-04
+
+### Fixed
+
+- Pasting code into a new untitled document now applies syntax highlighting. The language is
+  detected from the pasted content instead of leaving the tab as Plain Text.
+
+### Added
+
+- **Language → Detect from content** (also available from the status-bar language menu) re-detects
+  the language of an existing document at any time.
+- **Settings → Editor → Detect language when pasting code** enables or disables automatic detection
+  for new untitled documents (on by default).
+- Content-based detection heuristics for all 21 built-in languages, returning no result rather than
+  guessing when the sample is short or ambiguous.
+- 26 additional unit tests covering content detection (94 total).
+
 ## [1.0.0] - 2026-11-04
 
 First public release.

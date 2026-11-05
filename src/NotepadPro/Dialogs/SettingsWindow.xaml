@@ -189,6 +189,7 @@
                                 <CheckBox x:Name="WordWrapCheck" Content="Word wrap" Style="{StaticResource SettingCheck}" />
                                 <CheckBox x:Name="FoldingCheck" Content="Enable code folding" Style="{StaticResource SettingCheck}" />
                                 <CheckBox x:Name="AutoIndentCheck" Content="Smart auto-indent" Style="{StaticResource SettingCheck}" />
+                                <CheckBox x:Name="AutoDetectLanguageCheck" Content="Detect language when pasting code" Style="{StaticResource SettingCheck}" />
                             </StackPanel>
                             <StackPanel Grid.Column="1">
                                 <CheckBox x:Name="TrimOnSaveCheck" Content="Trim trailing whitespace on save" Style="{StaticResource SettingCheck}" />

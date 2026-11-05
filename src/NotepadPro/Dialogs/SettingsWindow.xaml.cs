@@ -73,6 +73,7 @@ public partial class SettingsWindow : DialogWindow
         WordWrapCheck.IsChecked = _working.WordWrap;
         FoldingCheck.IsChecked = _working.EnableFolding;
         AutoIndentCheck.IsChecked = _working.AutoIndent;
+        AutoDetectLanguageCheck.IsChecked = _working.AutoDetectLanguageOnPaste;
         TrimOnSaveCheck.IsChecked = _working.TrimTrailingWhitespaceOnSave;
         DragDropCheck.IsChecked = _working.EnableTextDragDrop;
         RestoreSessionCheck.IsChecked = _working.RestoreSession;
@@ -405,6 +406,7 @@ public partial class SettingsWindow : DialogWindow
         _working.WordWrap = WordWrapCheck.IsChecked == true;
         _working.EnableFolding = FoldingCheck.IsChecked == true;
         _working.AutoIndent = AutoIndentCheck.IsChecked == true;
+        _working.AutoDetectLanguageOnPaste = AutoDetectLanguageCheck.IsChecked == true;
         _working.TrimTrailingWhitespaceOnSave = TrimOnSaveCheck.IsChecked == true;
         _working.EnableTextDragDrop = DragDropCheck.IsChecked == true;
         _working.RestoreSession = RestoreSessionCheck.IsChecked == true;
