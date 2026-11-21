@@ -4,9 +4,10 @@
     Removes the per-user Notepad Pro installation.
 
 .DESCRIPTION
-    Deletes the installed executable, Start Menu and desktop shortcuts, and the
-    per-user registration entries. Settings, session, and recovery data are kept
-    unless -PurgeData is specified.
+    Deletes the installed executable, Start Menu and desktop shortcuts,
+    removes the installation directory from the user's PATH environment variable,
+    and removes the per-user registration and uninstall entries. Settings, session,
+    and recovery data are kept unless -PurgeData is specified.
 
 .PARAMETER PurgeData
     Also delete %APPDATA%\NotepadPro (settings, session, recent files) and
@@ -31,6 +32,9 @@ $ErrorActionPreference = 'Stop'
 
 $AppName = 'Notepad Pro'
 $InstallDir = Join-Path $env:LOCALAPPDATA 'Programs\NotepadPro'
+if ((Get-Location).Path.StartsWith($InstallDir, [System.StringComparison]::OrdinalIgnoreCase)) {
+    Set-Location $env:TEMP
+}
 $StartMenuLink = Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs\$AppName.lnk"
 $DesktopLink = Join-Path ([Environment]::GetFolderPath('Desktop')) "$AppName.lnk"
 $ConfigDir = Join-Path $env:APPDATA 'NotepadPro'
@@ -60,11 +64,35 @@ foreach ($link in @($StartMenuLink, $DesktopLink)) {
 
 foreach ($key in @(
     'HKCU:\Software\Microsoft\Windows\CurrentVersion\App Paths\NotepadPro.exe',
-    'HKCU:\Software\Classes\Applications\NotepadPro.exe'
+    'HKCU:\Software\Classes\Applications\NotepadPro.exe',
+    'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\NotepadPro'
 )) {
     if (Test-Path -Path $key) {
         Remove-Item -Path $key -Recurse -Force
         Write-Host "  Removed registry key $key"
+    }
+}
+
+# Remove from User PATH
+$userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
+if ($userPath) {
+    $normalizedInstallDir = $InstallDir.TrimEnd('\', '/')
+    $entries = $userPath -split ';' | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+    $filtered = @($entries | Where-Object { $_.Trim().TrimEnd('\', '/') -ine $normalizedInstallDir })
+    if ($filtered.Count -ne $entries.Count) {
+        $newPath = $filtered -join ';'
+        [Environment]::SetEnvironmentVariable('Path', $newPath, 'User')
+        Write-Host "  Removed $InstallDir from user PATH"
+    }
+}
+
+# Remove from current PowerShell session PATH
+if ($env:PATH) {
+    $normalizedInstallDir = $InstallDir.TrimEnd('\', '/')
+    $sessionEntries = $env:PATH -split ';' | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+    $filteredSession = @($sessionEntries | Where-Object { $_.Trim().TrimEnd('\', '/') -ine $normalizedInstallDir })
+    if ($filteredSession.Count -ne $sessionEntries.Count) {
+        $env:PATH = $filteredSession -join ';'
     }
 }
 
