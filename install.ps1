@@ -4,11 +4,11 @@
     Installs Notepad Pro for the current user.
 
 .DESCRIPTION
-    Copies the published NotepadPro.exe and uninstall.ps1 into %LOCALAPPDATA%\Programs\NotepadPro,
-    creates a Start Menu shortcut, adds the installation directory to the user's
-    PATH environment variable, registers the uninstaller with Windows (Settings > Installed apps),
-    and registers the application so it appears in the Windows "Open with" menu.
-    No administrator rights are required.
+    Copies the published NotepadPro.exe, documentation (README.md, LICENSE, CHANGELOG.md),
+    and uninstall.ps1 into %LOCALAPPDATA%\Programs\NotepadPro, creates a Start Menu shortcut,
+    adds the installation directory to the user's PATH environment variable, registers the
+    uninstaller with Windows (Settings > Installed apps), and registers the application so it
+    appears in the Windows "Open with" menu. No administrator rights are required.
 
 .PARAMETER Source
     Path to NotepadPro.exe. Defaults to NotepadPro.exe next to this script, or
@@ -78,10 +78,14 @@ if ($running) {
 New-Item -ItemType Directory -Path $InstallDir -Force | Out-Null
 Copy-Item -LiteralPath $sourcePath -Destination $TargetExe -Force
 
-$uninstallSource = Join-Path $PSScriptRoot 'uninstall.ps1'
-if (Test-Path -LiteralPath $uninstallSource -PathType Leaf) {
-    Copy-Item -LiteralPath $uninstallSource -Destination $TargetUninstall -Force
-    Write-Host "  Uninstaller copied to $TargetUninstall."
+$bundledFiles = @('uninstall.ps1', 'README.md', 'LICENSE', 'CHANGELOG.md')
+foreach ($fileName in $bundledFiles) {
+    $srcFile = Join-Path $PSScriptRoot $fileName
+    if (Test-Path -LiteralPath $srcFile -PathType Leaf) {
+        $destFile = Join-Path $InstallDir $fileName
+        Copy-Item -LiteralPath $srcFile -Destination $destFile -Force
+        Write-Host "  Copied $fileName."
+    }
 }
 
 function New-Shortcut {

@@ -144,7 +144,7 @@ not required.
 
 ### Install for the current user
 
-The zip includes `install.ps1`, which copies the executable and uninstaller to
+The zip includes `install.ps1`, which copies the executable, documentation (README, LICENSE, CHANGELOG), and uninstaller to
 `%LOCALAPPDATA%\Programs\NotepadPro`, adds the directory to the user's `PATH`, registers the app with Windows (**Settings > Installed apps**), adds a Start Menu shortcut, and registers Notepad Pro in the
 Windows **Open with** menu:
 
