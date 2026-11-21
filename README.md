@@ -152,7 +152,7 @@ Windows **Open with** menu:
 powershell -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
-Add `-DesktopShortcut` for a desktop shortcut, or `-NoPath` to skip modifying `PATH`. No administrator rights are needed.
+Add `-DesktopShortcut` for a desktop shortcut, or `-NoPath` to skip modifying `PATH`. Pass `-Help` to see all available options. No administrator rights are needed.
 
 To remove it (via **Settings > Installed apps**, or by script):
 

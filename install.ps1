@@ -1,4 +1,3 @@
-#Requires -Version 5.1
 <#
 .SYNOPSIS
     Installs Notepad Pro for the current user.
@@ -23,19 +22,33 @@
 .PARAMETER NoPath
     Skip adding the install directory to the user's PATH environment variable.
 
+.PARAMETER Help
+    Show this help message.
+
 .EXAMPLE
     powershell -ExecutionPolicy Bypass -File .\install.ps1
 
 .EXAMPLE
     powershell -ExecutionPolicy Bypass -File .\install.ps1 -DesktopShortcut
+
+.EXAMPLE
+    powershell -ExecutionPolicy Bypass -File .\install.ps1 -Help
 #>
+#Requires -Version 5.1
 [CmdletBinding()]
 param(
     [string]$Source,
     [switch]$DesktopShortcut,
     [switch]$NoOpenWith,
-    [switch]$NoPath
+    [switch]$NoPath,
+    [Alias('h', '?')]
+    [switch]$Help
 )
+
+if ($Help) {
+    Get-Help -Name $MyInvocation.MyCommand.Path -Detailed
+    return
+}
 
 $ErrorActionPreference = 'Stop'
 

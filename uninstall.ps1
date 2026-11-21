@@ -1,4 +1,3 @@
-#Requires -Version 5.1
 <#
 .SYNOPSIS
     Removes the per-user Notepad Pro installation.
@@ -16,17 +15,31 @@
 .PARAMETER Force
     Do not ask for confirmation when -PurgeData is used.
 
+.PARAMETER Help
+    Show this help message.
+
 .EXAMPLE
     powershell -ExecutionPolicy Bypass -File .\uninstall.ps1
 
 .EXAMPLE
     powershell -ExecutionPolicy Bypass -File .\uninstall.ps1 -PurgeData
+
+.EXAMPLE
+    powershell -ExecutionPolicy Bypass -File .\uninstall.ps1 -Help
 #>
+#Requires -Version 5.1
 [CmdletBinding()]
 param(
     [switch]$PurgeData,
-    [switch]$Force
+    [switch]$Force,
+    [Alias('h', '?')]
+    [switch]$Help
 )
+
+if ($Help) {
+    Get-Help -Name $MyInvocation.MyCommand.Path -Detailed
+    return
+}
 
 $ErrorActionPreference = 'Stop'
 
